@@ -1,0 +1,384 @@
+openapi: '3.0.0'
+info:
+  description: Manages APIs.
+  version: '1.0'
+  title: API
+  contact: {}
+servers:
+  - url: http://{server}/v1
+    variables:
+      server:
+        enum:
+          - 'cm-api.cloud.iai.kit.edu'
+          - 'localhost:8080'
+        default: 'cm-api.cloud.iai.kit.edu'
+tags:
+- name: API
+  description: General API operations
+- name: SpecificAPI
+  description: Specific API Operations
+- name: Release
+  description: Release Operations
+- name: SpecificRelease
+  description: Specific Release Operations
+- name: API Specification Registration
+  description: Enables the submission of API specifications.
+
+paths:
+  "/api":
+    get:
+      tags:
+      - API
+      summary: Get information of all APIs.
+      description: Returns all APIs with their releases.
+      operationId: getAPIList
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/apis"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  "/api/{apiID}":
+    patch:
+      tags:
+      - SpecificAPI
+      summary: Update an existing API entity.
+      description: Update the contents of an existing API entity.
+      operationId: updateAPI
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the API.
+        required: true
+      requestBody:
+        description: Updated API object.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_api"
+      responses:
+        '204':
+          description: Updated succesfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Resource not found
+    delete:
+      tags:
+      - SpecificAPI
+      summary: Delete an existing API entity.
+      description: Delete an exisiting API entity.
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: UUID of the API to be deleted.
+        required: true
+      operationId: deleteAPI
+      responses:
+        '204':
+          description: Updated succesfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Resource not found
+  "/api/{apiID}/release":
+    get:
+      tags:
+      - Release
+      summary: Get the Releases of an API.
+      description: Returns all the Releases belonging to the API with apiID.
+      operationId: getReleases
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: Automatically generated UUID
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/schema:
+              schema:
+                $ref: "#/components/schemas/releases"
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+  "/api/{apiID}/release/{releaseID}":
+    get:
+      tags:
+      - SpecificRelease
+      summary: Get a Release of an API.
+      description: Get a Release belonging to the API with apiID.
+      operationId: getRelease
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the API.
+        required: true
+      - name: releaseID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the Release.
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/schema:
+              schema:
+                $ref: "#/components/schemas/release"
+        '401':
+          description: Unauthorized
+        '404':
+          description: Resource not found
+    patch:
+      tags:
+      - SpecificRelease
+      summary: Update a Release of an API.
+      description: Update a Release belonging to the API with apiID.
+      operationId: updateRelease
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the API.
+        required: true
+      - name: releaseID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the Release.
+        required: true
+      requestBody:
+        description: Updated Response object.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/patch_release"    
+      responses:
+        '204':
+          description: Updated succesfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Resource not found
+    delete:
+      tags:
+      - SpecificRelease
+      summary: Delete a Release of an API
+      description: Delete a Release belonging to the API with apiID.
+      operationId: deleteRelease
+      parameters:
+      - name: apiID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the API to delete a release from.
+        required: true
+      - name: releaseID
+        schema:
+          type: string
+        in: path
+        description: UUID identifying the release to be deleted.
+        required: true    
+      responses:
+        '204':
+          description: Deleted succesfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Resource not found
+  "/api-specification":
+    post:
+      tags:
+      - API Specification Registration
+      summary: Adds a new API specification.
+      description: Returns OK when the operation was successful. The specifications is then available as a Release under an API resource.
+      operationId: postAPISpecification
+      requestBody:
+        description: New API specification to be stored.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/submit_api"
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  "/api-specification/{slug}":
+    delete:
+      tags:
+      - API Specification Registration
+      summary: Deletes a Release by slug.
+      description: Returns OK when the operation was successful. The specifications is used by the pipeline to delete a Release.
+      operationId: deletAPISpecificationBySlug
+      parameters:
+      - name: slug
+        schema:
+          type: string
+        in: path
+        description: Slug to identify the Release from.
+        required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Resource not Found
+components:
+  schemas:
+    apis:
+      title: "APIs"
+      type: array
+      items:
+        $ref: '#/components/schemas/api'
+      example:
+      - id: 7051e956-fdb5-40ce-b022-8c9572af8106
+        repositoryLink: https://git.scc.kit.edu/cm-tm/cm-team/serviceenvironment/1.domain/api
+        name: "APIManagement API"
+        description: "Handles API specifications."
+        releases:
+          "7051e956-fgh4-40ce-b022-8c9572af8106": "branch/master_PTSänger"
+      - id: 610c0c51-301e-4f76-8893-241bea7541a9
+        repositoryLink: https://git.scc.kit.edu/cm-tm/cm-team/serviceenvironment/1.domain/service
+        name: "APIManagement API"
+        description: "Handles API specifications."
+        releases:
+          "610c0c51-301e-4f76-8893-241bea754456": "branch/master_PTSänger"
+    releases:
+      title: "Releases"
+      type: array
+      items:
+        $ref: '#/components/schemas/release'
+      example:
+        - id: ec1e44bd-5ad0-4f7e-b817-616944f002ff
+          status: DEPRECATED
+          published: "2021-06-12T13:03:57.116Z"
+          slug: branch-master_PTSänger
+          specification:
+            specification: "OpenAPI.yaml specification data"
+            type: OPENAPI
+          commitSha: "dmadokk34mn23422"
+        - id: 891522ad-d601-448e-8501-3bc79835407a
+          status: ACTIVE
+          published: "2021-05-13T11:25:33.538Z"
+          slug: branch-master
+          specification:
+            specification: "OpenAPI.yaml specification data"
+            type: OPENAPI
+          commitSha: "ijanbdh34243jb"
+    api:
+      type: object
+      properties:
+        id:
+          type: string
+        repositoryLink:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        releases:
+          type: object
+          additionalProperties:
+            type: string
+            
+
+      title: API
+    release:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          $ref: '#/components/schemas/status'
+        published:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        apiSpecification:
+          $ref: "#/components/schemas/api_specification"
+        commitSha:
+          type: string
+      title: Release
+    api_specification:
+      type: object
+      properties:
+        specification:
+          type: string
+        type:
+          $ref: '#/components/schemas/specification_type'
+      title: APISpecification
+    submit_api:
+      type: object
+      properties:
+        repositoryLink:
+          type: string
+        release:
+          $ref: "#/components/schemas/submit_release"
+      title: SubmitAPI
+    submit_release:
+      type: object
+      properties:
+        slug:
+          type: string
+        apiSpecification:
+          $ref: "#/components/schemas/api_specification"
+      title: SubmitRelease
+    patch_api:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      title: PatchAPI
+    patch_release:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/status'
+      title: PatchRelease
+    status:
+      type: string
+      enum:
+        - ACTIVE
+        - DEPRECATED
+      title: "ReleaseStatus"
+    specification_type:
+      title: "SpecificationType"
+      type: string
+      enum:
+        - GRPC
+        - OPENAPI

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <help_text/>
+  <zoom_level>13</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>351</x>
+      <y>221</y>
+      <w>286</w>
+      <h>156</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;shared entity&gt;&gt;
+API
+--
+- id: String
+- name: String
+- repositoryLink: String
+- description: String
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>832</x>
+      <y>572</y>
+      <w>234</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;value object&gt;&gt;
+APISpecification
+--
+- specification: String
+- type: SpecificationType
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>468</x>
+      <y>364</y>
+      <w>91</w>
+      <h>208</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1..n
+has &gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1001</x>
+      <y>221</y>
+      <w>195</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+Status
+--
+ACTIVE
+DEPRECATED
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1001</x>
+      <y>377</y>
+      <w>195</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;enum&gt;&gt;
+SpecificationType
+--
+OPENAPI
+GRPC
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>416</x>
+      <y>546</y>
+      <w>195</w>
+      <h>169</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;entity&gt;&gt;
+Release
+--
+- id: String
+- slug: String
+- commit_sha: String
+- published: Date
+- status: Status
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>598</x>
+      <y>624</y>
+      <w>260</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=-
+m1=1
+m2=1
+has &gt;</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+</diagram>
